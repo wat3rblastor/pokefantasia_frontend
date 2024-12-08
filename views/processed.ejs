@@ -1,0 +1,324 @@
+<!-- /views/processed.ejs -->
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Processing</title>
+    <style>
+      /* Existing Styles */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS",
+          sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        text-align: center;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+        background-image: url("/assets/background.jpeg");
+        background-size: 100% 100%;
+        animation: gradientBackground 15s ease infinite;
+        color: #fff;
+        overflow: hidden; /* Prevent scrolling */
+        padding: 20px;
+      }
+
+      @keyframes gradientBackground {
+        0% {
+          background-position: 0% 50%;
+        }
+        50% {
+          background-position: 100% 50%;
+        }
+        100% {
+          background-position: 0% 50%;
+        }
+      }
+
+      h1 {
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-shadow: 0 0 20px #ff0080, 0 0 30px #ff0080;
+        margin-bottom: 1rem;
+        transition: font-size 0.5s ease;
+      }
+
+      /* Spinner Styles */
+      .spinner {
+        border: 8px solid rgba(255, 255, 255, 0.3);
+        border-top: 8px solid #ff0080;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1.5s linear infinite;
+        margin-bottom: 1.5rem;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Optional: Additional styling for text */
+      .message {
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin-bottom: 1.5rem;
+      }
+
+      /* Result container */
+      .result {
+        display: none;
+        margin-top: 2rem;
+        width: 100%;
+        max-width: 90vw;
+      }
+
+      .result img {
+        width: 100%;
+        height: auto;
+        max-width: 100%;
+        max-height: 60vh;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        object-fit: contain;
+      }
+
+      .result-text {
+        margin-top: 1rem;
+        font-size: 1.2rem;
+        color: #ff8c00;
+        background: rgba(0, 0, 0, 0.5);
+        padding: 8px 16px;
+        border-radius: 5px;
+        display: inline-block;
+        word-wrap: break-word;
+      }
+
+      .error-message {
+        color: #ff4d4d;
+        font-size: 1.2rem;
+        margin-top: 1rem;
+      }
+
+      /* Button Container */
+      .button-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 20px;
+        margin-top: 2rem;
+      }
+
+      /* Button Styles */
+      .btn {
+        padding: 10px 20px;
+        font-size: 1rem;
+        font-weight: bold;
+        color: #fff;
+        background-color: #ff0080;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s ease, transform 0.2s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .btn:hover {
+        background-color: #e60073;
+        transform: translateY(-2px);
+      }
+
+      .btn:active {
+        transform: translateY(0);
+      }
+
+      .btn-download {
+        background-color: #ff00c8;
+      }
+
+      .btn-download:hover {
+        background-color: #b90686;
+      }
+
+      .btn-try {
+        background-color: #056cda;
+      }
+
+      .btn-try:hover {
+        background-color: #074a92;
+      }
+
+      /* Responsive Adjustments */
+      @media (max-width: 768px) {
+        h1 {
+          font-size: 2rem;
+        }
+
+        .spinner {
+          width: 50px;
+          height: 50px;
+          border-width: 6px;
+        }
+
+        .message {
+          font-size: 1rem;
+        }
+
+        .result-text {
+          font-size: 1rem;
+          padding: 6px 12px;
+        }
+
+        .button-container {
+          flex-direction: column;
+          gap: 10px;
+        }
+
+        .btn {
+          width: 100%;
+          max-width: 300px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Processing</h1>
+    <div class="spinner"></div>
+    <p class="message">
+      Your image is being processed. Please wait a moment...
+    </p>
+
+    <!-- Container to display result -->
+    <div class="result" id="result">
+      <!-- Removed h2 as we'll update the main h1 instead -->
+
+      <!-- Image Result -->
+      <img id="resultImage" src="" alt="Processed Image" />
+
+      <!-- Text Result -->
+      <p id="resultText" class="result-text"></p>
+
+      <!-- Button Container -->
+      <div class="button-container">
+        <!-- Download Button -->
+        <a id="downloadButton" class="btn btn-download" href="#" download="processed_image.jpg">
+          Download
+        </a>
+
+        <!-- Try Another Button -->
+        <a href="/" class="btn btn-try">
+          Try Another
+        </a>
+      </div>
+    </div>
+
+    <!-- Container to display error -->
+    <div class="error-message" id="errorMessage"></div>
+
+    <script>
+      // Extract jobid from the server-rendered variable
+      const jobid = "<%= jobid %>";
+
+      // Function to poll the status
+      async function pollStatus() {
+        try {
+          const response = await fetch(`/status/${jobid}`);
+          const data = await response.json();
+
+          if (response.status === 200 && data.status !== 'processing') { // Processing is complete
+            displayResult(data);
+          } else if (data.status === 'processing') { // Still processing, continue polling
+            console.log(`Job ${jobid} status: ${data.message}. Continuing to poll...`);
+            setTimeout(pollStatus, 3000); // Poll every 3 seconds
+          } else { // Processing failed or unexpected status
+            displayError(data.error || 'Processing failed.');
+          }
+        } catch (error) {
+          console.error('Error polling status:', error);
+          displayError('An error occurred while checking the status.');
+        }
+      }
+
+      // Function to display the result
+      function displayResult(data) {
+        console.log("Displaying Result:", data);
+        const spinner = document.querySelector('.spinner');
+        const message = document.querySelector('.message');
+        const resultDiv = document.getElementById('result');
+        const resultText = document.getElementById('resultText');
+        const mainTitle = document.querySelector('h1');
+        const downloadButton = document.getElementById('downloadButton');
+
+        // Hide spinner and message
+        spinner.style.display = 'none';
+        message.style.display = 'none';
+
+        // Update the main title
+        mainTitle.textContent = 'Processing Complete!';
+
+        // Show result
+        resultDiv.style.display = 'block';
+
+        // Assuming the API returns a base64-encoded image string
+        const resultImage = document.getElementById('resultImage');
+
+        if (data.image) {
+          resultImage.src = `data:image/jpg;base64,${data.image}`;
+          resultImage.style.display = 'block';
+          console.log("Result Image set to:", data.image);
+
+          downloadButton.href = resultImage.src;
+          downloadButton.download = "processed_image.jpg";
+        } else {
+          resultImage.style.display = 'none';
+          downloadButton.style.display = 'none';
+        }
+
+        if (data.text) {
+          resultText.textContent = JSON.parse(atob(data.text)).predicted_type;
+          resultText.style.display = 'block';
+          console.log("Result Text set to:", data.text);
+        } else {
+          resultText.style.display = 'none';
+        }
+      }
+
+      // Function to display an error message
+      function displayError(message) {
+        const spinner = document.querySelector('.spinner');
+        const messageElem = document.querySelector('.message');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Hide spinner and message
+        spinner.style.display = 'none';
+        messageElem.style.display = 'none';
+
+        // Show error message
+        errorMessage.textContent = message;
+      }
+
+      // Start polling when the page loads
+      window.onload = () => {
+        pollStatus();
+      };
+    </script>
+  </body>
+</html>
