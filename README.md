@@ -1,7 +1,7 @@
 # Poke Fantasia 🌟
 
 <br>
-    <img src="assets/website.png" width="840">
+    <img src="public/assets/website.png" width="840">
 <br>
 
 Welcome to **Poke Fantasia** – your ultimate online portal to the world of Pokémon! This interactive platform combines functionality, fun, and Pokémon nostalgia to create a seamless user experience.
@@ -17,7 +17,7 @@ Welcome to **Poke Fantasia** – your ultimate online portal to the world of Pok
 
     <br>
 
-    <img src="assets/transform.png" alt="transform" width="750">
+    <img src="public/assets/transform.png" alt="transform" width="750">
 
     <br>
     <br>
@@ -31,7 +31,7 @@ Welcome to **Poke Fantasia** – your ultimate online portal to the world of Pok
 
     <br>
 
-    <img src="assets/transfer.png" alt="transfer" width="750">
+    <img src="public/assets/transfer.png" alt="transfer" width="750">
 
     <br>
     <br>
