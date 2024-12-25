@@ -83,7 +83,7 @@ To run the project locally:
 3. Configure environment variables:
 
    - Create a `.env` file in the root directory.
-   - Add the required variables (e.g. database URI, API keys).
+   - Add the required variables (e.g. database URL, API keys).
 
 4. Start the development server:
 
