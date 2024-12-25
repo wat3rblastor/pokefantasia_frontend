@@ -5,7 +5,7 @@ const router = express.Router();
 const config = require("../config/config");
 const axios = require("axios");
 
-// Route: GET /status/:jobid
+// Route: GET /status/:jobid 
 router.get("/:jobid", async (req, res) => {
   const jobid = req.params.jobid;
 
